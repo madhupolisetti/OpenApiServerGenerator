@@ -1,0 +1,92 @@
+﻿openapi: '3.0.3'
+info:
+  title: Net2Phone API
+  description: The initial test version of the API to test code generation.
+  version: 0.1.0
+security:
+  - OpenIdConnect: [ ]
+paths:
+  /users/me/avatar:
+    put:
+      operationId: UpdateMyAvatar
+      summary: Update my avatar
+      tags:
+        - Avatar
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateAvatarCommand'
+      responses:
+        200:
+          description: The user's avatar was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Avatar'
+  /users/{userId}/avatar-{avatarImageSize}.jpg:
+    get:
+      operationId: GetAvatarImage
+      summary: Get avatar image
+      tags:
+        - Avatar
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - name: avatarImageSize
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '400'
+      responses:
+        307:
+          description: A redirect to the user's avatar image of a certain size.
+          headers:
+            Location:
+              schema:
+                type: string
+                description: Location of the user avatar.
+                example: https://n2p-messaging-prod-storage.s3.us-east-1.amazonaws.com/6082ce5e436acf00018faf27-1619430611421-200px.jpg
+components:
+  securitySchemes:
+    OpenIdConnect:
+      type: openIdConnect
+      openIdConnectUrl: https://auth.net2phone.com/.well-known/openid-configuration
+  parameters:
+    UserId:
+      name: userId
+      in: path
+      required: true
+      description: The numeric id of the user.
+      schema:
+        type: integer
+  schemas:
+    UpdateAvatarCommand:
+      type: object
+      required:
+        - avatarImageFile
+      properties:
+        avatarImageFile:
+          type: string
+          format: binary
+    Avatar:
+      type: object
+      properties:
+        userId:
+          type: number
+          example: 1000
+        avatarImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvatarImage'
+    AvatarImage:
+      type: object
+      properties:
+        url:
+          type: string
+          example: https://n2p-messaging-prod-storage.s3.us-east-1.amazonaws.com/6082ce5e436acf00018faf27-1619430611421-200px.jpg
+        size:
+          type: string
+          description: The size of the image in pixels (for a resized image) or 'original' constant.
+          example: '400'

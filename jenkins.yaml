@@ -1,0 +1,8 @@
+# https://idtjira.atlassian.net/wiki/spaces/NET/pages/369033307/CI
+projectSettings:
+  buildNodeLabel: qa_linux_awscli
+  skipEmailNotifications: false
+  slackChannel:  # change this
+repoSettings:
+  imageName: "" # change this
+  artifactoryDockerRepoUrl: ""
